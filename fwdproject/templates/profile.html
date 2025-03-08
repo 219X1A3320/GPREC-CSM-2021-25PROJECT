@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+<!--
+        <nav>
+            <a href="{{ url_for('dashboard') }}">Home</a>
+            <a href="{{ url_for('prediction') }}">Predict</a>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        </nav>-->
+          <nav style="display: flex;
+    justify-content: left;
+    background-color: transparent !important;
+    padding: 1px 0;
+    margin-top: 0;">
+            <a href="{{ url_for('dashboard') }}">Home</a>
+            <a href="{{ url_for('prediction') }}">Predict</a>
+              <a href="{{ url_for('tracker') }}">Tracker</a>
+
+
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </nav>
+          <h1 style="color:white;">Your Details</h1>
+    </header>
+    <main>
+
+        <h2>Welcome, {{ account['username'] }}</h2>
+        <p><strong>Email:</strong> {{ account['email'] }}</p>
+        <p><strong>Age:</strong> {{ account['age'] }}</p>
+    </main>
+</body>
+</html>

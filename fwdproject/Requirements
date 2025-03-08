@@ -1,0 +1,5 @@
+This is the requirements page. Make sure that your interpreter contains these versions for libraries
+matplotlib - 3.10.1
+numpy - 1.23.5
+pandas - 2.2.3
+pandas-stubs - 1.2.0.56

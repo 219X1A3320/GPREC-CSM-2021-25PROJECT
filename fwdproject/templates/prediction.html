@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medical Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <nav style="display: flex; justify-content: left; background-color: transparent !important; padding: 1px 0; margin-top: 0;">
+            {% if session.get('loggedin') %}
+                <a href="{{ url_for('dashboard') }}">Home</a>
+            {% else %}
+                <a href="{{ url_for('index') }}">Home</a>
+            {% endif %}
+            <a href="{{ url_for('prediction') }}">Predict</a>
+            {% if session.get('loggedin') %}
+                <a href="{{ url_for('tracker') }}">Tracker</a>
+                <a href="{{ url_for('profile') }}">Profile</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}">Register</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main>
+        <h1 style="text-align: center;">Medical Prediction</h1>
+
+        {% if not session.get('loggedin') %}
+            <p style="text-align: center; color: red; font-weight: bold;">
+                Please complete login first before making predictions.
+            </p>
+        {% else %}
+            <form method="post">
+                <label><b>Blood Pressure:</b></label>
+            <select name="bloodpresssure" required>
+                <option>Normal range is 90-120/60-80 mmHg</option>
+                <option>Normal</option>
+                <option>Abnormal</option>
+            </select>
+            <br><br>
+
+            <label><b>Sugar Level:</b></label>
+            <select name="sugar" required>
+                <option>Normal range is 70-140 mg/dL</option>
+                <option>Normal</option>
+                <option>Abnormal</option>
+            </select>
+            <br><br>
+
+            <label><b>Temperature:</b></label>
+            <input type="text" name="Temperature" placeholder="Enter temperature" required>
+            <br><br>
+
+            <label><b>Age:</b></label>
+            <input type="text" name="age" placeholder="Enter age" required>
+            <br><br>
+
+            <label><b>Condition:</b></label>
+            <select name="Condition" required>
+                <option>Choose your symptom</option>
+                <option>Depression</option>
+                <option>Lymphocytic Colitis</option>
+                <option>Urinary Tract Infection</option>
+                <option>Weight Loss</option>
+                <option>Birth Control</option>
+                <option>Vaginal Yeast Infection</option>
+                <option>Narcolepsy</option>
+                <option>Insomnia</option>
+                <option>Bipolar Disorder</option>
+                <option>Hyperhidrosis</option>
+                <option>Panic Disorder</option>
+                <option>Rosacea</option>
+                <option>Bowel Preparation</option>
+                <option>Constipation, Drug Induced</option>
+                <option>Diabetes, Type 2</option>
+                <option>Pain</option>
+                <option>Alcohol Dependence</option>
+                <option>Emergency Contraception</option>
+                <option>Major Depressive Disorder</option>
+                <option>Anxiety</option>
+                <option>Acne</option>
+                <option>Cough and Nasal Congestion</option>
+                <option>Pain and Constipation, Drug Induced</option>
+                <option>Acne and Pain</option>
+                <option>Cough, Cold and Fever</option>
+                <option>Fever</option>
+            </select>
+            <br><br>
+
+            <button type="submit">Predict</button>
+            </form>
+
+            {% if prediction_text %}
+                <h2>{{ prediction_text }}</h2>
+                <!-- Add "Find Pharmacies" button -->
+                <div style="text-align: center; margin-top: 20px;">
+                        <a href="{{ url_for('pharmacies') }}" class="btn btn-primary">Find Pharmacies</a>
+                </div>
+            {% endif %}
+        {% endif %}
+    </main>
+
+</body>
+</html>

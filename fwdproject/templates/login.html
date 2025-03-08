@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+         <nav style="display: flex;
+    justify-content: left;
+    background-color: transparent !important;
+    padding: 1px 0;
+    margin-top: 0;">
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('prediction') }}">Predict</a>
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}">Register</a>
+        </nav>
+    </header>
+    <h1 style="text-align: center;">Login</h1>
+        <form method="post">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit" class="btn">Login</button>
+        </form>
+    </main>
+</body>
+</html>

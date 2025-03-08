@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medication Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 14px 20px;
+        }
+        .navbar a:hover {
+            background-color: #575757;
+            border-radius: 5px;
+        }
+        .navbar .active {
+            background-color: green;
+            border-radius: 5px;
+        }
+
+        /* Input Fields */
+        .input-container {
+            margin: 20px auto;
+            width: 60%;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        input, button {
+            margin: 10px;
+            padding: 8px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Progress Container */
+        .progress-container {
+            width: 60%;
+            margin: 10px auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #ddd;
+            height: 25px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        .progress {
+            height: 100%;
+            text-align: center;
+            line-height: 25px;
+            color: white;
+            font-weight: bold;
+        }
+        .progress.green { background-color: green; }
+        .progress.red { background-color: red; }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+           <a href="{{ url_for('dashboard') }}">Home</a>
+            <a href="{{ url_for('prediction') }}">Predict</a>
+            <a href="{{ url_for('tracker') }}">Tracker</a>
+
+            <a href="{{ url_for('profile') }}">Profile</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+    <h2>Medication Tracker</h2>
+    <p id="progressMessage">Enter your medicine details to start tracking.</p>
+
+    <!-- Input Section -->
+    <div class="input-container">
+        <label for="medicineName">Medicine Name:</label>
+        <input type="text" id="medicineName" placeholder="Enter medicine name" required>
+        <br>
+        <label for="duration">Duration (Days):</label>
+        <input type="number" id="duration" min="1" max="30" placeholder="Enter number of days" required>
+        <br>
+        <button onclick="createTracker()">Start Tracking</button>
+    </div>
+
+    <!-- Tracker Section -->
+    <form id="medicationForm" style="display: none;">
+        <div id="trackerContainer"></div>
+        <button type="button" onclick="updateProgress()">Update Progress</button>
+    </form>
+
+    <h3 id="totalPercentage" style="display: none;">Total Progress: 0%</h3>
+
+    <script>
+        let totalCourseDays = 0;
+        let takenDays = 0;
+
+        function createTracker() {
+            const medicineName = document.getElementById("medicineName").value;
+            const duration = document.getElementById("duration").value;
+
+            if (!medicineName || duration <= 0) {
+                alert("Please enter valid medicine name and duration.");
+                return;
+            }
+
+            totalCourseDays = parseInt(duration);
+            takenDays = 0;
+
+            document.getElementById("progressMessage").textContent = `Tracking: ${medicineName} for ${totalCourseDays} days`;
+            document.getElementById("medicationForm").style.display = "block";
+            document.getElementById("totalPercentage").style.display = "block";
+
+            // Create tracker UI
+            const container = document.getElementById("trackerContainer");
+            container.innerHTML = "";
+
+            for (let i = 1; i <= totalCourseDays; i++) {
+                container.innerHTML += `
+                    <div class="progress-container">
+                        <h4>Day ${i}</h4>
+                        <label><input type="radio" name="day${i}" value="taken"> Taken</label>
+                        <label><input type="radio" name="day${i}" value="notTaken"> Not Taken</label>
+                        <div class="progress-bar">
+                            <div id="dayProgress${i}" class="progress"></div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function updateProgress() {
+            let takenDays = 0;
+
+            for (let i = 1; i <= totalCourseDays; i++) {
+                let progressBar = document.getElementById(`dayProgress${i}`);
+                let status = document.querySelector(`input[name="day${i}"]:checked`);
+
+                if (status) {
+                    if (status.value === "taken") {
+                        progressBar.style.width = "100%";
+                        progressBar.textContent = "100%";
+                        progressBar.className = "progress green";
+                        takenDays++;
+                    } else if (status.value === "notTaken") {
+                        progressBar.style.width = "100%";
+                        progressBar.textContent = "0%";
+                        progressBar.className = "progress red";
+                    }
+                }
+            }
+
+            // Calculate and display completion status
+            const remainingDays = totalCourseDays - takenDays;
+            const takenPercent = Math.round((takenDays / totalCourseDays) * 100);
+
+            document.getElementById("progressMessage").textContent = takenDays === totalCourseDays
+                ? `Great job! You completed ${takenPercent}% of your medication.`
+                : `You have completed ${takenDays} days. ${remainingDays} days remaining.`;
+
+            document.getElementById("totalPercentage").textContent = `Total Progress: ${takenPercent}%`;
+
+            if (takenDays === totalCourseDays) {
+                disableInputs();
+            }
+        }
+
+        // Disable input after completion
+        function disableInputs() {
+            document.getElementById("medicationForm").querySelectorAll("input, button").forEach(el => {
+                el.disabled = true;
+            });
+        }
+
+    </script>
+
+</body>
+</html>

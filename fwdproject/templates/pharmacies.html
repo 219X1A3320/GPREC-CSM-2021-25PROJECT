@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacy Locator by Pincode</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        select, button {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        .pharmacy {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Find Local Pharmacies</h1>
+    <form id="pincodeForm">
+        <label for="pincode">Select your Pincode:</label>
+        <select id="pincode" name="pincode" required>
+            <option value="">Select Pincode</option>
+        </select>
+        <button type="submit">Search Pharmacies</button>
+    </form>
+
+    <div class="result" id="result"></div>
+</div>
+<script>
+    const pharmacies = [
+        // Important Cities of Andhra Pradesh
+        { circle: "Andhra Pradesh Circle", region: "Vijayawada Region", division: "Vijayawada Division", office: "Vijayawada", pincode: "520001", state: "Andhra Pradesh", shopName: "City Medicals" },
+        { circle: "Andhra Pradesh Circle", region: "Visakhapatnam Region", division: "Visakhapatnam Division", office: "Visakhapatnam", pincode: "530002", state: "Andhra Pradesh", shopName: "Vizag Pharmacy" },
+        { circle: "Andhra Pradesh Circle", region: "Guntur Region", division: "Guntur Division", office: "Guntur", pincode: "522002", state: "Andhra Pradesh", shopName: "Guntur Health Care" },
+        { circle: "Andhra Pradesh Circle", region: "Tirupati Region", division: "Tirupati Division", office: "Tirupati", pincode: "517501", state: "Andhra Pradesh", shopName: "Tirupati Pharma" },
+        { circle: "Andhra Pradesh Circle", region: "Kurnool Region", division: "Kurnool Division", office: "Kurnool", pincode: "518001", state: "Andhra Pradesh", shopName: "Kurnool Meds" },
+        { circle: "Andhra Pradesh Circle", region: "Rajahmundry Region", division: "Rajahmundry Division", office: "Rajahmundry", pincode: "533101", state: "Andhra Pradesh", shopName: "Rajahmundry Medical Store" },
+        { circle: "Andhra Pradesh Circle", region: "Nellore Region", division: "Nellore Division", office: "Nellore", pincode: "524001", state: "Andhra Pradesh", shopName: "Nellore Pharmacy" },
+        { circle: "Andhra Pradesh Circle", region: "Kakinada Region", division: "Kakinada Division", office: "Kakinada", pincode: "533001", state: "Andhra Pradesh", shopName: "Kakinada Health Plus" },
+        { circle: "Andhra Pradesh Circle", region: "Anantapur Region", division: "Anantapur Division", office: "Anantapur", pincode: "515001", state: "Andhra Pradesh", shopName: "Anantapur Medicos" },
+        { circle: "Andhra Pradesh Circle", region: "Kadapa Region", division: "Kadapa Division", office: "Kadapa", pincode: "516001", state: "Andhra Pradesh", shopName: "Kadapa Pharmacy" },
+        { circle: "Andhra Pradesh Circle", region: "Chittoor Region", division: "Chittoor Division", office: "Chittoor", pincode: "517001", state: "Andhra Pradesh", shopName: "Chittoor Medicals" },
+        { circle: "Andhra Pradesh Circle", region: "Srikakulam Region", division: "Srikakulam Division", office: "Srikakulam", pincode: "532001", state: "Andhra Pradesh", shopName: "Srikakulam Pharma" },
+        { circle: "Andhra Pradesh Circle", region: "Vizianagaram Region", division: "Vizianagaram Division", office: "Vizianagaram", pincode: "535001", state: "Andhra Pradesh", shopName: "Vizianagaram Health Care" },
+
+        //Adding more pincodes.
+        { circle: "Andhra Pradesh Circle", region: "Vijayawada Region", division: "Vijayawada Division", office: "Machilipatnam", pincode: "521001", state: "Andhra Pradesh", shopName: "Machilipatnam Pharmacy" },
+        { circle: "Andhra Pradesh Circle", region: "Guntur Region", division: "Guntur Division", office: "Tenali", pincode: "522301", state: "Andhra Pradesh", shopName: "Tenali Medical Store" },
+        { circle: "Andhra Pradesh Circle", region: "Visakhapatnam Region", division: "Visakhapatnam Division", office: "Anakapalli", pincode: "531001", state: "Andhra Pradesh", shopName: "Anakapalli Health Center" },
+        { circle: "Andhra Pradesh Circle", region: "Tirupati Region", division: "Tirupati Division", office: "Srikalahasti", pincode: "517644", state: "Andhra Pradesh", shopName: "Srikalahasti Pharmacy" },
+        { circle: "Andhra Pradesh Circle", region: "Kurnool Region", division: "Kurnool Division", office: "Nandyal", pincode: "518501", state: "Andhra Pradesh", shopName: "Nandyal Medicals" },
+        { circle: "Andhra Pradesh Circle", region: "Rajahmundry Region", division: "Rajahmundry Division", office: "Amalapuram", pincode: "533201", state: "Andhra Pradesh", shopName: "Amalapuram Pharmacy" },
+        { circle: "Andhra Pradesh Circle", region: "Nellore Region", division: "Nellore Division", office: "Kavali", pincode: "524201", state: "Andhra Pradesh", shopName: "Kavali Medicals" },
+        { circle: "Andhra Pradesh Circle", region: "Kakinada Region", division: "Kakinada Division", office: "Razole", pincode: "533242", state: "Andhra Pradesh", shopName: "Razole Pharmacy" },
+        { circle: "Andhra Pradesh Circle", region: "Anantapur Region", division: "Anantapur Division", office: "Tadipatri", pincode: "515411", state: "Andhra Pradesh", shopName: "Tadipatri Medicals" },
+        { circle: "Andhra Pradesh Circle", region: "Kadapa Region", division: "Kadapa Division", office: "Proddatur", pincode: "516360", state: "Andhra Pradesh", shopName: "Proddatur Pharmacy" },
+    ];
+
+    const pincodeSelect = document.getElementById('pincode');
+    const uniquePincodes = [...new Set(pharmacies.map(pharmacy => pharmacy.pincode))];
+
+    uniquePincodes.forEach(pincode => {
+        const option = document.createElement('option');
+        option.value = pincode;
+        option.textContent = pincode;
+        pincodeSelect.appendChild(option);
+    });
+
+    document.getElementById('pincodeForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const pincode = document.getElementById('pincode').value;
+        const filteredPharmacies = pharmacies.filter(pharmacy => pharmacy.pincode === pincode);
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = '';
+
+        if (filteredPharmacies.length > 0) {
+            filteredPharmacies.forEach(pharmacy => {
+                const pharmacyDiv = document.createElement('div');
+                pharmacyDiv.classList.add('pharmacy');
+                pharmacyDiv.innerHTML = `
+                    <h3>${pharmacy.shopName}</h3>
+                    <p><strong>Address:</strong> ${pharmacy.office}, ${pharmacy.circle}, ${pharmacy.region}, ${pharmacy.division}, ${pharmacy.state} - ${pharmacy.pincode}</p>
+                `;
+                resultDiv.appendChild(pharmacyDiv);
+            });
+        } else {
+            resultDiv.innerHTML = `<p>No pharmacies found for pincode ${pincode}.</p>`;
+        }
+    });
+</script>
+</body>
+</html>
+
